@@ -44,7 +44,7 @@
     "swc": false,
     "disableSWC": true
   },
-  "appid": "wx92126e992b3a374a",
+  "appid": "touristappid",
   "projectname": "wx-scy-toolbox",
   "libVersion": "3.17.0",
   "compileType": "miniprogram",
