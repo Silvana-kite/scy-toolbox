@@ -1,0 +1,12 @@
+# WeChat DevTools machine-specific settings
+project.private.config.json
+
+# Cloud function dependencies and package-manager output
+cloudfunctions/**/node_modules/
+cloudfunctions/**/npm-debug.log*
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

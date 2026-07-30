@@ -1,0 +1,5 @@
+<view class="app-shell">
+  <view class="brand-mark"><view></view><view></view><view></view><view></view></view>
+  <view class="brand-name">SCY 工具箱</view>
+  <view class="environment-label">{{environmentLabel}}</view>
+</view>

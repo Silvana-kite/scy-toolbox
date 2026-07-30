@@ -1,0 +1,40 @@
+page {
+  background: #f4f7f5;
+  color: #18362f;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 72rpx 48rpx;
+  box-sizing: border-box;
+}
+
+.brand-mark {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  width: 56rpx;
+}
+
+.brand-mark view {
+  width: 24rpx;
+  height: 24rpx;
+  background: #0d6f58;
+}
+
+.brand-mark view:nth-child(2) { background: #efb64d; }
+.brand-mark view:nth-child(3) { background: #c96343; }
+.brand-mark view:nth-child(4) { background: #1f9780; }
+
+.brand-name {
+  margin-top: 28rpx;
+  font-size: 46rpx;
+  font-weight: 700;
+  line-height: 62rpx;
+}
+
+.environment-label {
+  margin-top: 8rpx;
+  color: #71857e;
+  font-size: 24rpx;
+}
