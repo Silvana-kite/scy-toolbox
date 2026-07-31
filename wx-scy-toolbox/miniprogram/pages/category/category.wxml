@@ -1,0 +1,54 @@
+<view class="category-page">
+  <view class="page-header">
+    <view class="header-copy">
+      <view class="header-title">工具大全</view>
+      <view class="header-subtitle">按分类发现实用工具</view>
+    </view>
+    <view class="header-search" bindtap="onSearchTap">
+      <view class="header-search-icon"></view>
+    </view>
+  </view>
+
+  <view class="directory-layout">
+    <view class="sidebar">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="sidebar-item {{currentCategory === item.id ? 'sidebar-item-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onCategoryTap"
+      >
+        <view class="sidebar-icon sidebar-icon-{{item.id}}">{{item.symbol}}</view>
+        <view class="sidebar-label">{{item.name}}</view>
+      </view>
+    </view>
+
+    <scroll-view class="tool-panel" scroll-y="true" show-scrollbar="false">
+      <view class="tool-panel-inner">
+
+        <view wx:if="{{toolCount}}" class="waterfall-grid">
+          <view wx:for="{{toolColumns}}" wx:for-item="column" wx:key="index" class="waterfall-column">
+            <view
+              wx:for="{{column}}"
+              wx:for-item="tool"
+              wx:key="id"
+              class="tool-card"
+              data-id="{{tool.id}}"
+              bindtap="onToolTap"
+            >
+              <view class="tool-icon icon-{{tool.icon}}"><text>{{tool.symbol}}</text></view>
+              <view class="tool-name">{{tool.name}}</view>
+              <view class="tool-desc">{{tool.description}}</view>
+              <view class="card-arrow">›</view>
+            </view>
+          </view>
+        </view>
+        <view wx:else class="empty-state">
+          <image class="empty-image" src="/images/icons/notData.svg" mode="aspectFit"></image>
+          <view class="empty-title">暂无数据</view>
+          <view class="empty-desc">更多工具正在整理中</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

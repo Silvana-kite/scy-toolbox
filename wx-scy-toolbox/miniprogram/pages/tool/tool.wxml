@@ -1,0 +1,106 @@
+<view class="tool-page">
+  <view class="tool-header">
+    <view class="tool-header-copy">
+      <view class="tool-title">{{tool.name}}</view>
+      <view class="tool-intro">{{tool.description}}</view>
+    </view>
+    <button class="favorite-button {{isFavorite ? 'favorite-button-active' : ''}}" bindtap="onFavoriteTap">{{isFavorite ? '★' : '☆'}}</button>
+  </view>
+
+  <view class="form-card">
+    <view wx:for="{{tool.fields}}" wx:key="key" class="form-field">
+      <view class="field-label">{{item.label}}</view>
+
+      <input
+        wx:if="{{item.type === 'input'}}"
+        class="field-input"
+        type="{{item.inputType}}"
+        value="{{formValues[item.key]}}"
+        placeholder="{{item.placeholder}}"
+        data-key="{{item.key}}"
+        bindinput="onFieldInput"
+      />
+
+      <textarea
+        wx:elif="{{item.type === 'textarea'}}"
+        class="field-textarea"
+        value="{{formValues[item.key]}}"
+        placeholder="{{item.placeholder}}"
+        auto-height
+        data-key="{{item.key}}"
+        bindinput="onFieldInput"
+      ></textarea>
+
+      <view wx:elif="{{item.type === 'slider'}}" class="slider-control">
+        <slider
+          min="{{item.min}}"
+          max="{{item.max}}"
+          step="{{item.step}}"
+          value="{{formValues[item.key]}}"
+          activeColor="#0D6F58"
+          backgroundColor="#DCE7E2"
+          block-color="#0D6F58"
+          block-size="20"
+          data-key="{{item.key}}"
+          bindchange="onSliderChange"
+        />
+        <view class="slider-value">{{formValues[item.key]}}{{item.suffix}}</view>
+      </view>
+
+      <view wx:elif="{{item.type === 'choice'}}" class="choice-list">
+        <button
+          wx:for="{{item.options}}"
+          wx:for-item="option"
+          wx:key="value"
+          class="choice-button {{formValues[item.key] === option.value ? 'choice-button-active' : ''}}"
+          data-key="{{item.key}}"
+          data-value="{{option.value}}"
+          bindtap="onChoiceTap"
+        >{{option.label}}</button>
+      </view>
+
+      <picker
+        wx:elif="{{item.type === 'date'}}"
+        class="date-picker"
+        mode="date"
+        value="{{formValues[item.key]}}"
+        data-key="{{item.key}}"
+        bindchange="onDateChange"
+      >
+        <view class="date-picker-value {{formValues[item.key] ? '' : 'date-picker-placeholder'}}">{{formValues[item.key] || '请选择日期'}}</view>
+      </picker>
+
+      <button
+        wx:elif="{{item.type === 'uploader'}}"
+        class="upload-button {{formValues[item.key] ? 'upload-button-selected' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onChooseImage"
+      >{{formValues[item.key] ? '已选择图片，点击更换' : '选择图片'}}</button>
+    </view>
+
+    <button class="execute-button" bindtap="onExecute">{{tool.actionLabel}}</button>
+  </view>
+
+  <view wx:if="{{result.visible}}" class="result-card result-card-{{result.status}}">
+    <view class="result-heading">
+      <view class="result-title">{{result.title}}</view>
+      <button class="copy-button" bindtap="onCopyResult">复制</button>
+    </view>
+    <view class="result-text">{{result.text}}</view>
+    <view wx:if="{{result.detail}}" class="result-detail">{{result.detail}}</view>
+  </view>
+
+  <view class="history-section">
+    <view class="history-heading">
+      <view class="history-title">本地历史</view>
+      <button wx:if="{{history.length}}" class="history-clear" bindtap="onClearHistory">清除</button>
+    </view>
+    <view wx:if="{{history.length}}" class="history-list">
+      <view wx:for="{{history}}" wx:key="id" class="history-item">
+        <view class="history-result">{{item.result}}</view>
+        <view class="history-time">{{item.createdAt}}</view>
+      </view>
+    </view>
+    <view wx:else class="history-empty">执行后的结果会自动保存在本机</view>
+  </view>
+</view>

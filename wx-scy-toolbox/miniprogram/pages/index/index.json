@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "SCY 工具箱"
+  "navigationBarTitleText": "SCY百宝箱",
+  "navigationBarBackgroundColor": "#FDF8FA",
+  "navigationBarTextStyle": "black"
 }

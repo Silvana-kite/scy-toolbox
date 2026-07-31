@@ -1,0 +1,74 @@
+<view class="mine-page">
+  <view class="profile-band">
+    <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <image wx:if="{{avatarUrl}}" class="avatar-image" src="{{avatarUrl}}" mode="aspectFill"></image>
+      <view wx:else class="default-avatar">
+        <view class="avatar-bow"></view>
+        <view class="avatar-hair"></view>
+        <view class="avatar-face">
+          <view class="avatar-eyes"></view>
+          <view class="avatar-smile"></view>
+        </view>
+        <view class="avatar-dress"></view>
+      </view>
+    </button>
+    <view class="profile-copy">
+      <view class="profile-name-row">
+        <input class="nickname-input" type="nickname" value="{{nickname}}" bindblur="onNicknameBlur" />
+        <view class="profile-tag">SCY 宝箱</view>
+      </view>
+      <view class="profile-caption">发现工具之美 <text>✦</text></view>
+    </view>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat-item">
+      <view class="stat-value">{{favoriteCount}}</view>
+      <view class="stat-label">我的收藏</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-value">{{usageCount}}</view>
+      <view class="stat-label">使用总次数</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item stat-item-top">
+      <view class="stat-value stat-top-value">{{topTool}}</view>
+      <view class="stat-label">常用工具 Top1</view>
+    </view>
+  </view>
+
+  <view class="menu-list">
+    <view class="menu-row" bindtap="onOpenFavorites">
+      <view class="menu-icon menu-icon-star">★</view>
+      <view class="menu-label">我的收藏</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="onOpenHistory">
+      <view class="menu-icon menu-icon-history">◷</view>
+      <view class="menu-label">使用历史</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <button class="menu-row menu-button" open-type="contact" session-from="scy-toolbox-mine">
+      <view class="menu-icon menu-icon-feedback">?</view>
+      <view class="menu-label">意见反馈</view>
+      <view class="menu-arrow">›</view>
+    </button>
+    <view class="menu-row" bindtap="onOpenAbout">
+      <view class="menu-icon menu-icon-about">i</view>
+      <view class="menu-label">关于我们</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="onClearCache">
+      <view class="menu-icon menu-icon-clear">⌫</view>
+      <view class="menu-label">清除缓存</view>
+      <view class="menu-extra">{{cacheSize}}</view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="copyright">
+    <view>MIT License</view>
+    <view class="copyright-made">Made with ❤️ by SCY</view>
+  </view>
+</view>

@@ -1,0 +1,72 @@
+.tab-bar {
+  display: flex;
+  align-items: flex-start;
+  height: 112rpx;
+  padding: 12rpx 20rpx env(safe-area-inset-bottom);
+  box-sizing: border-box;
+  border-top: 2rpx solid #ececf3;
+  background: #ffffff;
+  box-shadow: 0 -8rpx 22rpx rgba(91, 99, 120, 0.06);
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tab-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 16rpx;
+}
+
+.tab-item-active .tab-icon-wrap {
+  background: #eef7ff;
+}
+
+.tab-fallback-icon,
+.tab-fallback-image,
+.tab-lottie {
+  position: absolute;
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.tab-fallback-icon {
+  color: #9ca2b0;
+  font-size: 42rpx;
+  line-height: 48rpx;
+  text-align: center;
+}
+
+.tab-fallback-image {
+  z-index: 1;
+}
+
+.tab-lottie {
+  z-index: 2;
+}
+
+.tab-label {
+  overflow: hidden;
+  max-width: 100%;
+  margin-top: 2rpx;
+  color: #9ca2b0;
+  font-size: 20rpx;
+  line-height: 28rpx;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-item-active .tab-label {
+  color: #5d8fb7;
+  font-weight: 700;
+}

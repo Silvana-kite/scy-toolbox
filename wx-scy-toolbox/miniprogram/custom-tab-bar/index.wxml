@@ -1,0 +1,21 @@
+<view class="tab-bar">
+  <view
+    wx:for="{{tabItems}}"
+    wx:key="pagePath"
+    class="tab-item {{selected === index ? 'tab-item-active' : ''}}"
+    data-index="{{index}}"
+    bindtap="onTabTap"
+  >
+    <view class="tab-icon-wrap">
+      <image
+        wx:if="{{selected !== index && item.fallbackImage}}"
+        class="tab-fallback-image"
+        src="{{item.fallbackImage}}"
+        mode="aspectFit"
+      />
+      <text wx:elif="{{selected !== index}}" class="tab-fallback-icon">{{item.fallbackIcon}}</text>
+      <canvas wx:if="{{selected === index}}" id="tab-lottie-{{index}}" class="tab-lottie" type="2d"></canvas>
+    </view>
+    <view class="tab-label">{{item.text}}</view>
+  </view>
+</view>
