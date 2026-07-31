@@ -34,3 +34,7 @@ cloudfunctions/<domain>/
 4. 将密钥配置在 CloudBase 云函数环境变量，禁止进入小程序代码或 Git。
 
 更多边界说明见 [架构约定](docs/ARCHITECTURE.md)。
+
+## 开源配置
+
+提交代码前的环境配置与密钥边界见[配置说明](docs/CONFIGURATION.md)。

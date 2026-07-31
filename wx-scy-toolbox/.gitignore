@@ -1,6 +1,10 @@
 # WeChat DevTools machine-specific settings
 project.private.config.json
 
+# Developer-specific CloudBase environment selection. Copy the tracked example
+# before opening the project in WeChat DevTools.
+miniprogram/config/project.local.js
+
 # Cloud function dependencies and package-manager output
 cloudfunctions/**/node_modules/
 cloudfunctions/**/npm-debug.log*

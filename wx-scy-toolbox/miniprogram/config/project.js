@@ -1,8 +1,16 @@
 /**
  * Shared runtime configuration for the mini program.
- * Set envId to the CloudBase environment used by this project before deployment.
+ * Copy project.local.example.js to project.local.js and set the CloudBase env ID.
  */
+const projectConfig = require("./project.local");
+
+if (!projectConfig.envId || projectConfig.envId === "your-cloudbase-environment-id") {
+  throw new Error(
+    "Missing CloudBase envId. Copy config/project.local.example.js to config/project.local.js and configure it."
+  );
+}
+
 module.exports = {
-  envId: "toolbox-master-d5g724ay98ee0f3e8",
-  environmentLabel: "toolbox-master",
+  envId: projectConfig.envId,
+  environmentLabel: projectConfig.environmentLabel || projectConfig.envId,
 };
