@@ -1,0 +1,38 @@
+{
+  "name": "scy-toolbox-web",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.11.3",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@vueuse/nuxt": "^13.9.0",
+    "lucide-vue-next": "^0.468.0",
+    "nuxt": "^4.5.1",
+    "pinia": "^3.0.4",
+    "qrcode": "^1.5.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.9.0",
+    "@nuxt/test-utils": "^3.22.0",
+    "@playwright/test": "^1.58.0",
+    "@types/node": "^24.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^17.6.3",
+    "typescript": "^5.8.3",
+    "vue-tsc": "^3.0.8",
+    "vitest": "^3.2.4"
+  }
+}
