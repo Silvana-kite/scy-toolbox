@@ -1,5 +1,6 @@
 # WeChat DevTools machine-specific settings
 project.private.config.json
+cloudbaserc.json
 
 # Developer-specific CloudBase environment selection. Copy the tracked example
 # before opening the project in WeChat DevTools.

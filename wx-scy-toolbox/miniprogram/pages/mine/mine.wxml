@@ -14,7 +14,15 @@
     </button>
     <view class="profile-copy">
       <view class="profile-name-row">
-        <input class="nickname-input" type="nickname" value="{{nickname}}" bindblur="onNicknameBlur" />
+        <input
+          class="nickname-input"
+          type="nickname"
+          confirm-type="done"
+          value="{{nickname}}"
+          bindinput="onNicknameInput"
+          bindconfirm="onNicknameCommit"
+          bindblur="onNicknameCommit"
+        />
         <view class="profile-tag">SCY 宝箱</view>
       </view>
       <view class="profile-caption">发现工具之美 <text>✦</text></view>

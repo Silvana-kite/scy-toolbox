@@ -1,28 +1,16 @@
-const PROFILE_STORAGE_KEY = "scy-mine-profile";
 const FAVORITES_STORAGE_KEY = "scy-tool-favorites";
 const HISTORY_STORAGE_KEY = "scy-tool-history";
 const USAGE_STORAGE_KEY = "scy-tool-usage-count";
+const { callCloudFunction } = require("../../services/cloud");
 
-const toolNames = {
-  calculator: "计算器",
-  unit: "单位换算",
-  mortgage: "房贷计算",
-  percentage: "百分比计算",
-  compress: "图片压缩",
-  qrcode: "二维码生成",
-  crop: "图片裁剪",
-  "word-count": "字数统计",
-  "text-format": "文本格式化",
-  countdown: "日期倒计时",
-  "date-difference": "日期间隔",
-  ruler: "手机尺子",
-  "color-picker": "颜色取值",
-  random: "随机决定",
-};
+const toolNames = {};
 
 const defaultProfile = {
   avatarUrl: "",
-  nickname: "SCY 用户",
+  avatarFileId: "",
+  nickname: "访客",
+  userId: "",
+  isGuest: false,
 };
 
 function getStoredArray(key) {
@@ -52,6 +40,8 @@ Page({
   data: {
     avatarUrl: "",
     nickname: defaultProfile.nickname,
+    userId: "",
+    isGuest: false,
     favoriteCount: 0,
     usageCount: 0,
     topTool: "暂无使用",
@@ -60,8 +50,9 @@ Page({
     historyRecords: [],
   },
 
-  onLoad() {
-    this.loadProfile();
+  async onLoad() {
+    this.savedProfile = { ...defaultProfile };
+    await this.loadCloudProfile();
     this.refreshStats();
   },
 
@@ -73,15 +64,68 @@ Page({
     this.refreshStats();
   },
 
-  onChooseAvatar(event) {
-    this.setData({ avatarUrl: event.detail.avatarUrl || "" });
-    this.saveProfile();
+  async onChooseAvatar(event) {
+    const filePath = event.detail.avatarUrl;
+    if (!filePath || this.data.isGuest || !this.data.userId) {
+      wx.showToast({ title: "联网后可修改资料", icon: "none" });
+      return;
+    }
+
+    wx.showLoading({ title: "上传中" });
+    try {
+      if (this.savedProfile.avatarFileId) {
+        await wx.cloud.deleteFile({ fileList: [this.savedProfile.avatarFileId] });
+      }
+      const uploadResult = await wx.cloud.uploadFile({
+        cloudPath: `avatars/${this.data.userId}/avatar.png`,
+        filePath,
+      });
+      const result = await callCloudFunction("users", {
+        action: "updateProfile",
+        profile: { avatarFileId: uploadResult.fileID },
+      });
+      this.applyProfile(result.data.user);
+    } catch (error) {
+      this.applyProfile(this.savedProfile);
+      wx.showToast({ title: "头像更新失败", icon: "none" });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
-  onNicknameBlur(event) {
-    const nickname = String(event.detail.value || "").trim() || defaultProfile.nickname;
-    this.setData({ nickname });
-    this.saveProfile();
+  onNicknameInput(event) {
+    this.setData({ nickname: String(event.detail.value || "") });
+  },
+
+  async onNicknameCommit(event) {
+    if (this.isSavingNickname) {
+      return;
+    }
+
+    const nickname = String(event.detail.value || this.data.nickname || "").trim();
+    if (!nickname || nickname === this.savedProfile.nickname) {
+      this.setData({ nickname: this.savedProfile.nickname });
+      return;
+    }
+    if (this.data.isGuest) {
+      this.setData({ nickname: this.savedProfile.nickname });
+      wx.showToast({ title: "联网后可修改资料", icon: "none" });
+      return;
+    }
+
+    this.isSavingNickname = true;
+    try {
+      const result = await callCloudFunction("users", {
+        action: "updateProfile",
+        profile: { nickname },
+      });
+      this.applyProfile(result.data.user);
+    } catch (error) {
+      this.setData({ nickname: this.savedProfile.nickname });
+      wx.showToast({ title: "昵称更新失败", icon: "none" });
+    } finally {
+      this.isSavingNickname = false;
+    }
   },
 
   onOpenFavorites() {
@@ -109,17 +153,13 @@ Page({
   onClearCache() {
     wx.showModal({
       title: "清除缓存",
-      content: "将清除头像、昵称、收藏与使用历史，是否继续？",
+      content: "将清除收藏、工具使用记录与其他本地缓存，是否继续？",
       success: (response) => {
         if (!response.confirm) {
           return;
         }
-        [PROFILE_STORAGE_KEY, FAVORITES_STORAGE_KEY, HISTORY_STORAGE_KEY, USAGE_STORAGE_KEY].forEach((key) => {
+        [FAVORITES_STORAGE_KEY, HISTORY_STORAGE_KEY, USAGE_STORAGE_KEY].forEach((key) => {
           wx.removeStorageSync(key);
-        });
-        this.setData({
-          avatarUrl: defaultProfile.avatarUrl,
-          nickname: defaultProfile.nickname,
         });
         this.refreshStats();
         wx.showToast({ title: "缓存已清除", icon: "none" });
@@ -127,18 +167,30 @@ Page({
     });
   },
 
-  loadProfile() {
-    const storedProfile = wx.getStorageSync(PROFILE_STORAGE_KEY);
-    const profile = storedProfile && typeof storedProfile === "object"
-      ? { ...defaultProfile, ...storedProfile }
-      : defaultProfile;
-    this.setData(profile);
+  async loadCloudProfile() {
+    const app = getApp();
+    const user = await (app.globalData.userReady || Promise.resolve(defaultProfile));
+    this.applyProfile(user);
   },
 
-  saveProfile() {
-    wx.setStorageSync(PROFILE_STORAGE_KEY, {
-      avatarUrl: this.data.avatarUrl,
-      nickname: this.data.nickname,
+  applyProfile(user) {
+    const app = getApp();
+    if (user && typeof app.setCurrentUser === "function") {
+      app.setCurrentUser(user);
+    }
+    const profile = {
+      avatarUrl: user.avatarFileId || "",
+      avatarFileId: user.avatarFileId || "",
+      nickname: user.nickname || defaultProfile.nickname,
+      userId: user.userId || "",
+      isGuest: Boolean(user.isGuest),
+    };
+    this.savedProfile = profile;
+    this.setData({
+      avatarUrl: profile.avatarUrl,
+      nickname: profile.nickname,
+      userId: profile.userId,
+      isGuest: profile.isGuest,
     });
   },
 

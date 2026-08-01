@@ -16,14 +16,18 @@ export default defineNuxtConfig({
       ],
     },
   },
+  runtimeConfig: {
+    authSessionSecret: process.env.AUTH_SESSION_SECRET || '',
+    cloudbaseEnvId: process.env.CLOUDBASE_ENV_ID || '',
+    cloudbaseApiKey: process.env.CLOUDBASE_APIKEY || '',
+  },
   nitro: {
     prerender: {
-      routes: ['/', '/me', ...tools.map(tool => `/tool/${tool.id}`)],
+      routes: ['/', ...tools.map(tool => `/tool/${tool.id}`)],
     },
   },
   routeRules: {
     '/': { prerender: true },
-    '/me': { prerender: true },
     '/tool/**': { prerender: true },
   },
   typescript: { strict: true },

@@ -1,0 +1,13 @@
+{
+  "name": "scy-toolbox-users",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test test/**/*.test.js"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.21",
+    "wx-server-sdk": "^4.0.2"
+  }
+}
