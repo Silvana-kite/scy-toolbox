@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft, Heart } from 'lucide-vue-next'
-import { getTool, toolCategories } from '~/data/tools'
+import { getTool } from '~/data/tools'
 
 const route = useRoute()
 const selectedTool = getTool(String(route.params.id))
@@ -14,7 +14,7 @@ const favorite = computed(() => store.favorites.includes(tool.id))
 <template>
   <div class="tool-page">
     <NuxtLink to="/" class="back-link"><ArrowLeft :size="17" />返回工具目录</NuxtLink>
-    <header class="tool-heading"><div class="tool-heading-main"><span class="tool-heading-icon" :style="{ backgroundColor: tool.accent }"><ToolIcon :name="tool.icon" :size="27" /></span><div><p class="eyebrow">{{ toolCategories.find(item => item.id === tool.category)?.name }}</p><h1 class="page-title">{{ tool.name }}</h1><p class="page-description">{{ tool.description }}</p></div></div><button class="icon-button" :class="{ 'icon-button-active': favorite }" :title="favorite ? '取消收藏' : '收藏工具'" :aria-label="favorite ? '取消收藏' : '收藏工具'" type="button" @click="store.toggleFavorite(tool.id)"><Heart :size="18" :fill="favorite ? 'currentColor' : 'none'" /></button></header>
+    <header class="tool-heading"><div class="tool-heading-main"><span class="tool-heading-icon" :style="{ backgroundColor: tool.accent }"><ToolIcon :name="tool.icon" :size="27" /></span><div><p class="eyebrow">{{ tool.category }}</p><h1 class="page-title">{{ tool.name }}</h1><p class="page-description">{{ tool.description }}</p></div></div><button class="icon-button" :class="{ 'icon-button-active': favorite }" :title="favorite ? '取消收藏' : '收藏工具'" :aria-label="favorite ? '取消收藏' : '收藏工具'" type="button" @click="store.toggleFavorite(tool.id)"><Heart :size="18" :fill="favorite ? 'currentColor' : 'none'" /></button></header>
     <ToolRunner :tool="tool" />
   </div>
 </template>

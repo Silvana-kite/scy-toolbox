@@ -1,4 +1,4 @@
-export type ToolCategoryId = 'calculation' | 'image' | 'text' | 'date' | 'everyday'
+export type ToolCategoryId = string
 
 export type FieldType = 'number' | 'text' | 'textarea' | 'select' | 'range' | 'date'
 
@@ -24,7 +24,6 @@ export interface ToolDefinition {
   accent: string
   actionLabel: string
   fields: ToolField[]
-  browserOnly?: 'image' | 'qrcode' | 'ruler' | 'color'
 }
 
 export interface ToolResult {

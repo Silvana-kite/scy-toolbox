@@ -45,11 +45,7 @@ function updateValue(key: string, value: string | number) {
           <input v-else :value="values[field.key]" :min="field.min" :type="field.type" :placeholder="field.placeholder" class="input" @input="updateValue(field.key, ($event.target as HTMLInputElement).value)">
         </label>
       </div>
-      <ClientOnly v-if="tool.browserOnly">
-        <ImageWorkbench :tool="tool" :values="values" @result="saveResult" @error="error = $event" />
-        <template #fallback><div class="client-loading">正在准备浏览器工具…</div></template>
-      </ClientOnly>
-      <button v-if="!tool.browserOnly" class="button run-button" type="button" @click="run">{{ tool.actionLabel }}</button>
+      <button class="button run-button" type="button" @click="run">{{ tool.actionLabel }}</button>
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
     </section>
 
@@ -75,7 +71,6 @@ function updateValue(key: string, value: string | number) {
 .range-field input { flex: 1; accent-color: var(--green); }
 .range-field output { min-width: 52px; color: var(--green); font-size: 13px; font-weight: 700; text-align: right; }
 .run-button { width: 100%; margin-top: 22px; }
-.client-loading { min-height: 80px; display: grid; place-items: center; color: var(--muted); }
 .result-heading, .history-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 h2 { margin: 0; font-size: 18px; }
 .result-panel pre { margin: 22px 0 0; overflow: auto; color: var(--ink); font: 700 18px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; }

@@ -1,5 +1,3 @@
-import { tools } from './app/data/tools'
-
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-31',
   devtools: { enabled: true },
@@ -23,12 +21,11 @@ export default defineNuxtConfig({
   },
   nitro: {
     prerender: {
-      routes: ['/', ...tools.map(tool => `/tool/${tool.id}`)],
+      routes: ['/'],
     },
   },
   routeRules: {
     '/': { prerender: true },
-    '/tool/**': { prerender: true },
   },
   typescript: { strict: true },
 })
