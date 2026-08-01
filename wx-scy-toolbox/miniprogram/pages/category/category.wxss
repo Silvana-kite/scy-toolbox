@@ -260,6 +260,7 @@ page {
 .icon-ruler { color: #a47ce4; background: #f4efff; }
 .icon-color-picker { color: #ef6f90; background: #fff0f3; }
 .icon-random { color: #39bca6; background: #ebfaf6; }
+.icon-image-repair { color: #438bc1; background: #edf7ff; }
 
 .tool-name {
   margin-top: 16rpx;
@@ -312,4 +313,54 @@ page {
   color: #a9b2c1;
   font-size: 22rpx;
   line-height: 32rpx;
+}
+
+.tools-loading,
+.tool-status {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 360rpx;
+  color: #8d9ab1;
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.loading-spinner {
+  width: 42rpx;
+  height: 42rpx;
+  margin-bottom: 18rpx;
+  box-sizing: border-box;
+  border: 5rpx solid #dff4f0;
+  border-top-color: #28bca4;
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+.offline-notice {
+  margin: 18rpx 0 10rpx;
+  padding: 10rpx 14rpx;
+  color: #9b782c;
+  border-radius: 10rpx;
+  background: #fff8e8;
+  font-size: 20rpx;
+  line-height: 28rpx;
+}
+
+.retry-button {
+  width: 190rpx;
+  height: 62rpx;
+  margin-top: 20rpx;
+  padding: 0;
+  color: #ffffff;
+  border-radius: 10rpx;
+  background: #28bca4;
+  font-size: 24rpx;
+  line-height: 62rpx;
+}
+
+@keyframes spinner-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

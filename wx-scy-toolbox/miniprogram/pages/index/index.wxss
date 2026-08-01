@@ -276,6 +276,7 @@ page {
 .icon-countdown { background: #bee3d8; }
 .icon-word-count { background: #b9daf4; }
 .icon-unit { background: #f5c3d0; }
+.icon-image-repair { background: #79b9e8; }
 
 .tool-name {
   width: 100%;
@@ -313,6 +314,55 @@ page {
   color: #a5a8b1;
   font-size: 24rpx;
   line-height: 34rpx;
+}
+
+.tools-loading,
+.tool-status {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 270rpx;
+  color: #8c909b;
+  font-size: 25rpx;
+  line-height: 36rpx;
+}
+
+.loading-spinner {
+  width: 42rpx;
+  height: 42rpx;
+  margin-bottom: 18rpx;
+  box-sizing: border-box;
+  border: 5rpx solid #f4dce2;
+  border-top-color: #f19aac;
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+.offline-badge {
+  padding: 4rpx 12rpx;
+  color: #a47a32;
+  border-radius: 8rpx;
+  background: #fff7df;
+  font-size: 21rpx;
+  line-height: 30rpx;
+}
+
+.retry-button {
+  width: 190rpx;
+  height: 62rpx;
+  margin-top: 20rpx;
+  padding: 0;
+  color: #ffffff;
+  border-radius: 10rpx;
+  background: #f19aac;
+  font-size: 24rpx;
+  line-height: 62rpx;
+}
+
+@keyframes spinner-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .consent-mask {

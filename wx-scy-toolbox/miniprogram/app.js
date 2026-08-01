@@ -36,7 +36,7 @@ App({
 
   restoreConsentState: function () {
     const consent = wx.getStorageSync("scy-image-repair-consent");
-    if (consent && consent.version === "2026-08-01" && consent.imageRightsConfirmed === true) {
+    if (consent && consent.version === "2026-08-02" && consent.imageRightsConfirmed === true) {
       this.initializeUser(consent);
       return;
     }

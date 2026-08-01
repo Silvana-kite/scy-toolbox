@@ -1,25 +1,27 @@
-const categories = [
-  { id: "推荐", name: "推荐" },
-];
+const { loadHome, recordToolUse } = require("../../services/tool-catalog");
 
-const tools = [];
+const categories = [{ id: "common", name: "常用" }];
 const CONSENT_STORAGE_KEY = "scy-image-repair-consent";
-const CONSENT_VERSION = "2026-08-01";
+const CONSENT_VERSION = "2026-08-02";
 
 Page({
   data: {
     categories,
-    tools,
-    currentCategory: "推荐",
+    tools: [],
+    currentCategory: "common",
     keyword: "",
-    filteredTools: tools,
+    filteredTools: [],
     showConsentModal: false,
     consentAccepted: false,
     consentSubmitting: false,
+    isLoadingTools: true,
+    toolsLoadError: false,
+    isOfflineTools: false,
   },
 
   onLoad() {
     this.syncConsentModal();
+    this.loadTools();
   },
 
   onShow() {
@@ -52,7 +54,7 @@ Page({
   onConsentReject() {
     wx.showModal({
       title: "暂不能使用",
-      content: "使用照片修复工具前，需要确认您拥有图片处理权。",
+      content: "使用图片去水印工具前，需要确认您拥有图片处理权。",
       confirmText: "退出小程序",
       showCancel: false,
       success: () => {
@@ -103,17 +105,43 @@ Page({
   },
 
   onToolTap(event) {
-    wx.showToast({
-      title: `${event.currentTarget.dataset.name}功能开发中`,
-      icon: "none",
-    });
+    const { toolId, route } = event.currentTarget.dataset;
+    if (!route) {
+      return;
+    }
+    recordToolUse(toolId).catch(() => {});
+    wx.navigateTo({ url: route });
+  },
+
+  async loadTools() {
+    this.setData({ isLoadingTools: true, toolsLoadError: false, isOfflineTools: false });
+    try {
+      const result = await loadHome();
+      this.setData({
+        tools: result.tools || [],
+        isOfflineTools: result.fromCache === true,
+        isLoadingTools: false,
+      });
+      this.applyFilters();
+    } catch (error) {
+      this.setData({
+        tools: [],
+        filteredTools: [],
+        toolsLoadError: true,
+        isLoadingTools: false,
+      });
+    }
+  },
+
+  onRetryTools() {
+    this.loadTools();
   },
 
   applyFilters() {
     const keyword = this.data.keyword.trim();
     const filteredTools = this.data.tools.filter((tool) => {
       const matchesCategory =
-        this.data.currentCategory === "推荐" || tool.category === this.data.currentCategory;
+        this.data.currentCategory === "common" || tool.categoryId === this.data.currentCategory;
       const matchesKeyword = tool.name.indexOf(keyword) !== -1;
       return matchesCategory && matchesKeyword;
     });

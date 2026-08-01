@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/category/category",
+    "pages/image-repair/image-repair",
     "pages/tool/tool",
     "pages/mine/mine"
   ],
@@ -34,6 +35,7 @@
     ]
   },
   "sitemapLocation": "sitemap.json",
+  "workers": "workers",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents"
 }

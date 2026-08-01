@@ -1,0 +1,52 @@
+page { background: #f7f8fa; }
+.repair-page { min-height: 100vh; color: #263238; }
+.empty-page { display: flex; min-height: calc(100vh - 160rpx); align-items: center; flex-direction: column; justify-content: center; padding: 0 56rpx; box-sizing: border-box; text-align: center; }
+.empty-mark { display: flex; align-items: center; justify-content: center; width: 128rpx; height: 128rpx; color: #fff; border-radius: 24rpx; background: #6aaee4; font-size: 54rpx; font-weight: 700; }
+.empty-title { margin-top: 38rpx; color: #2c3541; font-size: 34rpx; font-weight: 700; line-height: 48rpx; }
+.empty-copy { margin-top: 10rpx; color: #86909c; font-size: 25rpx; line-height: 36rpx; }
+.primary-button, .secondary-button, .cancel-button, .rechoose-button, .icon-tool, .segment, .contrast-toggle { margin: 0; padding: 0; }
+.primary-button { display: flex; align-items: center; justify-content: center; width: 100%; height: 92rpx; color: #fff; border-radius: 14rpx; background: #1976d2; font-size: 30rpx; font-weight: 700; line-height: 1; }
+.empty-page .primary-button { width: 360rpx; margin-top: 48rpx; }
+.editor-page { padding: 28rpx 30rpx calc(34rpx + env(safe-area-inset-bottom)); }
+.phase-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24rpx; }
+.phase-title { color: #263238; font-size: 32rpx; font-weight: 700; line-height: 44rpx; }
+.phase-copy { margin-top: 4rpx; color: #8a949f; font-size: 22rpx; line-height: 32rpx; }
+.rechoose-button { display: flex; align-items: center; justify-content: center; min-width: 100rpx; height: 58rpx; color: #4b647b; border-radius: 10rpx; background: #eaf0f5; font-size: 23rpx; }
+.canvas-stage, .compare-stage { position: relative; width: 100%; height: 760rpx; overflow: hidden; border-radius: 12rpx; background: #e9edf1; box-shadow: inset 0 0 0 1rpx rgba(83, 98, 112, .08); }
+.stage-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.stage-mask { z-index: 2; }
+.tool-panel, .result-panel { margin-top: 24rpx; padding: 24rpx; border-radius: 12rpx; background: #fff; }
+.tool-row { display: flex; gap: 12rpx; }
+.icon-tool { display: flex; flex: 1; align-items: center; justify-content: center; height: 68rpx; color: #607182; border-radius: 9rpx; background: #edf1f5; font-size: 23rpx; }
+.icon-tool-active { color: #fff; background: #1976d2; font-weight: 700; }
+.icon-tool[disabled] { color: #b9c1c9; background: #f3f5f7; }
+.setting-row { display: flex; align-items: center; min-height: 70rpx; margin-top: 18rpx; }
+.setting-label { flex: 0 0 72rpx; color: #687787; font-size: 24rpx; }
+.brush-slider { flex: 1; min-width: 0; margin: 0 18rpx 0 0; }
+.brush-value { display: flex; flex: 0 0 58rpx; align-items: center; justify-content: center; height: 52rpx; color: #1976d2; border-radius: 8rpx; background: #edf5fc; font-size: 23rpx; font-weight: 700; }
+.segmented-control { display: flex; flex: 1; min-width: 0; gap: 8rpx; }
+.segment { display: flex; flex: 1; align-items: center; justify-content: center; height: 58rpx; color: #6c7b89; border-radius: 8rpx; background: #f1f4f6; font-size: 22rpx; }
+.segment-active { color: #1976d2; box-shadow: inset 0 0 0 2rpx #1976d2; font-weight: 700; }
+.segment-red { color: #d9534f; box-shadow: inset 0 0 0 2rpx #d9534f; }
+.segment-blue { color: #1976d2; box-shadow: inset 0 0 0 2rpx #1976d2; }
+.contrast-toggle { display: flex; flex: 0 0 112rpx; align-items: center; justify-content: center; height: 58rpx; margin-left: 12rpx; color: #6c7b89; border-radius: 8rpx; background: #f1f4f6; font-size: 21rpx; }
+.contrast-toggle-active { color: #fff; background: #34495e; }
+.repair-button { margin-top: 26rpx; }
+.cancel-button { display: flex; align-items: center; justify-content: center; width: 100%; height: 62rpx; margin-top: 10rpx; color: #71808d; background: transparent; font-size: 23rpx; }
+.compare-stage { touch-action: none; }
+.compare-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: center center; }
+.compare-result-clip { position: absolute; top: 0; bottom: 0; left: 0; overflow: hidden; }
+.compare-divider { position: absolute; top: 0; bottom: 0; width: 4rpx; margin-left: -2rpx; background: #fff; box-shadow: 0 0 8rpx rgba(0, 0, 0, .35); }
+.compare-slider { margin: 0; }
+.compare-labels { display: flex; justify-content: space-between; margin: 0 8rpx 20rpx; color: #7b8996; font-size: 22rpx; }
+.secondary-button { display: flex; align-items: center; justify-content: center; width: 100%; height: 82rpx; margin-top: 14rpx; color: #536576; border-radius: 14rpx; background: #edf1f4; font-size: 27rpx; }
+.source-canvas { position: fixed; z-index: -1; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.guide-mask { position: fixed; z-index: 20; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; padding: 42rpx; box-sizing: border-box; background: rgba(25, 35, 45, .48); }
+.guide-dialog { width: 100%; padding: 40rpx 32rpx 30rpx; border-radius: 16rpx; background: #fff; box-sizing: border-box; }
+.guide-title { color: #273342; font-size: 35rpx; font-weight: 700; line-height: 50rpx; }
+.guide-step { display: flex; align-items: center; margin-top: 28rpx; color: #445565; font-size: 26rpx; font-weight: 700; line-height: 36rpx; }
+.guide-step text { display: block; margin-top: 2rpx; color: #93a0ad; font-size: 21rpx; font-weight: 400; line-height: 30rpx; }
+.guide-icon { display: flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 52rpx; height: 52rpx; margin-right: 18rpx; border-radius: 50%; font-size: 26rpx; }
+.guide-icon-blue { color: #1976d2; background: #e7f2fc; }.guide-icon-red { color: #d85c5c; background: #fff0f0; }.guide-icon-green { color: #3b9a70; background: #eaf8f0; }
+.guide-notice { margin-top: 30rpx; padding: 18rpx; color: #758392; border-radius: 10rpx; background: #f4f7f9; font-size: 21rpx; line-height: 31rpx; }
+.guide-confirm { display: flex; align-items: center; justify-content: center; width: 100%; height: 84rpx; margin-top: 28rpx; color: #fff; border-radius: 12rpx; background: #1976d2; font-size: 28rpx; font-weight: 700; }

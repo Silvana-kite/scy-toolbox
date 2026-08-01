@@ -1,0 +1,71 @@
+<view class="repair-page">
+  <view wx:if="{{showGuide}}" class="guide-mask" catchtouchmove="noop">
+    <view class="guide-dialog">
+      <view class="guide-title">三步完成图片去水印</view>
+      <view class="guide-step"><view class="guide-icon guide-icon-blue">1</view><view><view>选择图片</view><text>从相册导入，或直接拍照</text></view></view>
+      <view class="guide-step"><view class="guide-icon guide-icon-red">2</view><view><view>涂抹水印</view><text>缩放图片后用画笔标记区域</text></view></view>
+      <view class="guide-step"><view class="guide-icon guide-icon-green">3</view><view><view>去除并保存</view><text>本机修复后确认效果并保存</text></view></view>
+      <view class="guide-notice">请仅处理您拥有版权或已获授权的图片。图片、笔迹和修复结果均不会上传。</view>
+      <button class="guide-confirm" bindtap="onGuideClose">我知道了</button>
+    </view>
+  </view>
+
+  <view wx:if="{{!imagePath}}" class="empty-page">
+    <view class="empty-mark">修</view>
+    <view class="empty-title">选择一张图片开始处理</view>
+    <view class="empty-copy">手动涂抹需要修复的局部区域</view>
+    <button class="primary-button" bindtap="onChooseImage">选择图片</button>
+  </view>
+
+  <view wx:else class="editor-page">
+    <view class="phase-header">
+      <view><view class="phase-title">{{isResult ? '查看修复效果' : '标记水印区域'}}</view><view class="phase-copy">{{isResult ? '双指缩放查看细节，拖动滑杆对比' : '双指缩放、拖拽图片后可精细涂抹'}}</view></view>
+      <button class="rechoose-button" disabled="{{processing}}" bindtap="onChooseImage">重选</button>
+    </view>
+
+    <view wx:if="{{!isResult}}" class="canvas-stage">
+      <canvas id="editor-canvas" type="2d" class="stage-canvas"></canvas>
+      <canvas id="mask-canvas" type="2d" class="stage-canvas stage-mask" catchtouchstart="onEditorTouchStart" catchtouchmove="onEditorTouchMove" catchtouchend="onEditorTouchEnd" catchtouchcancel="onEditorTouchEnd"></canvas>
+    </view>
+
+    <view wx:else class="compare-stage" catchtouchstart="onCompareTouchStart" catchtouchmove="onCompareTouchMove" catchtouchend="onCompareTouchEnd" catchtouchcancel="onCompareTouchEnd">
+      <image class="compare-image" src="{{imagePath}}" mode="aspectFit" style="{{compareImageStyle}}"></image>
+      <view class="compare-result-clip" style="width: {{comparePosition}}%;">
+        <image class="compare-image compare-result-image" src="{{resultPath}}" mode="aspectFit" style="{{compareImageStyle}}"></image>
+      </view>
+      <view class="compare-divider" style="left: {{comparePosition}}%;"></view>
+    </view>
+
+    <view wx:if="{{!isResult}}" class="tool-panel">
+      <view class="tool-row">
+        <button class="icon-tool {{brushMode === 'brush' ? 'icon-tool-active' : ''}}" bindtap="onSelectBrush">画笔</button>
+        <button class="icon-tool {{brushMode === 'eraser' ? 'icon-tool-active' : ''}}" bindtap="onSelectEraser">橡皮擦</button>
+        <button class="icon-tool" disabled="{{!canUndo}}" bindtap="onUndo">撤销</button>
+        <button class="icon-tool" disabled="{{!canRedo}}" bindtap="onRedo">重做</button>
+      </view>
+      <view class="setting-row">
+        <view class="setting-label">笔刷</view>
+        <slider class="brush-slider" min="1" max="100" value="{{brushSize}}" activeColor="#1976D2" backgroundColor="#DDE3EA" bindchanging="onBrushSizeChange" bindchange="onBrushSizeChange" />
+        <view class="brush-value">{{brushSize}}</view>
+      </view>
+      <view class="setting-row">
+        <view class="setting-label">掩膜</view>
+        <view class="segmented-control">
+          <button class="segment {{maskColor === 'red' ? 'segment-active segment-red' : ''}}" data-color="red" bindtap="onMaskColorTap">红色</button>
+          <button class="segment {{maskColor === 'blue' ? 'segment-active segment-blue' : ''}}" data-color="blue" bindtap="onMaskColorTap">蓝色</button>
+        </view>
+        <button class="contrast-toggle {{highContrast ? 'contrast-toggle-active' : ''}}" bindtap="onToggleContrast">高对比</button>
+      </view>
+      <button class="primary-button repair-button" disabled="{{processing || !canRepair}}" loading="{{processing}}" bindtap="onRepair">{{processing ? '处理中 ' + progress + '%' : '去除'}}</button>
+      <button wx:if="{{processing}}" class="cancel-button" bindtap="onCancelRepair">取消处理</button>
+    </view>
+
+    <view wx:else class="result-panel">
+      <slider class="compare-slider" min="0" max="100" value="{{comparePosition}}" activeColor="#1976D2" backgroundColor="#DDE3EA" bindchanging="onCompareSlider" bindchange="onCompareSlider" />
+      <view class="compare-labels"><text>原图</text><text>修复后</text></view>
+      <button class="primary-button" bindtap="onSaveResult">保存到相册</button>
+      <button class="secondary-button" bindtap="onBackToEditor">继续修改</button>
+    </view>
+  </view>
+  <canvas id="source-canvas" type="2d" class="source-canvas"></canvas>
+</view>

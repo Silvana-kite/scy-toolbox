@@ -1,20 +1,39 @@
-const categories = [
-  { id: "all", name: "全部", symbol: "▦" },
-];
+const { loadCatalog, recordToolUse } = require("../../services/tool-catalog");
 
-const tools = [];
+const ALL_CATEGORY = { id: "all", name: "全部", symbol: "▦" };
+
+function buildCategories(tools) {
+  const categoriesById = new Map();
+  tools.forEach((tool) => {
+    if (!tool.categoryId || categoriesById.has(tool.categoryId)) {
+      return;
+    }
+    categoriesById.set(tool.categoryId, {
+      id: tool.categoryId,
+      name: tool.categoryName || "未分类",
+      symbol: tool.categorySymbol || "•",
+      order: Number(tool.categoryOrder) || 0,
+    });
+  });
+  return [ALL_CATEGORY].concat(
+    Array.from(categoriesById.values()).sort((left, right) => left.order - right.order)
+  );
+}
 
 Page({
   data: {
-    categories,
+    categories: [ALL_CATEGORY],
     currentCategory: "all",
     currentCategoryName: "全部工具",
     toolColumns: [],
-    toolCount: tools.length,
+    toolCount: 0,
+    isLoadingTools: true,
+    toolsLoadError: false,
+    isOfflineTools: false,
   },
 
   onLoad() {
-    this.updateTools();
+    this.loadTools();
   },
 
   onShow() {
@@ -30,9 +49,12 @@ Page({
   },
 
   onToolTap(event) {
-    wx.navigateTo({
-      url: `/pages/tool/tool?toolId=${event.currentTarget.dataset.id}`,
-    });
+    const { toolId, route } = event.currentTarget.dataset;
+    if (!route) {
+      return;
+    }
+    recordToolUse(toolId).catch(() => {});
+    wx.navigateTo({ url: route });
   },
 
   onSearchTap() {
@@ -43,10 +65,42 @@ Page({
     wx.showToast({ title: event.currentTarget.dataset.name, icon: "none" });
   },
 
+  async loadTools() {
+    this.setData({ isLoadingTools: true, toolsLoadError: false, isOfflineTools: false });
+    try {
+      const result = await loadCatalog();
+      this.catalogTools = result.tools || [];
+      const categories = buildCategories(this.catalogTools);
+      const currentCategory = categories.some((category) => category.id === this.data.currentCategory)
+        ? this.data.currentCategory
+        : "all";
+      this.setData({
+        categories,
+        currentCategory,
+        isOfflineTools: result.fromCache === true,
+        isLoadingTools: false,
+      });
+      this.updateTools();
+    } catch (error) {
+      this.catalogTools = [];
+      this.setData({
+        toolColumns: [],
+        toolCount: 0,
+        toolsLoadError: true,
+        isLoadingTools: false,
+      });
+    }
+  },
+
+  onRetryTools() {
+    this.loadTools();
+  },
+
   updateTools() {
     const currentCategory = this.data.currentCategory;
-    const filteredTools = tools.filter(
-      (tool) => currentCategory === "all" || tool.category === currentCategory
+    const catalogTools = this.catalogTools || [];
+    const filteredTools = catalogTools.filter(
+      (tool) => currentCategory === "all" || tool.categoryId === currentCategory
     );
     const toolColumns = [[], []];
 
@@ -58,7 +112,7 @@ Page({
       currentCategoryName:
         currentCategory === "all"
           ? "全部工具"
-          : categories.find((category) => category.id === currentCategory).name,
+          : this.data.categories.find((category) => category.id === currentCategory).name,
       toolColumns,
       toolCount: filteredTools.length,
     });

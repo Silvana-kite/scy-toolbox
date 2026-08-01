@@ -25,15 +25,28 @@
 
     <scroll-view class="tool-panel" scroll-y="true" show-scrollbar="false">
       <view class="tool-panel-inner">
+        <view wx:if="{{isOfflineTools}}" class="offline-notice">当前显示离线缓存数据</view>
 
-        <view wx:if="{{toolCount}}" class="waterfall-grid">
+        <view wx:if="{{isLoadingTools}}" class="tools-loading">
+          <view class="loading-spinner"></view>
+          <view>正在加载工具</view>
+        </view>
+
+        <view wx:elif="{{toolsLoadError}}" class="tool-status">
+          <view class="empty-title">工具加载失败</view>
+          <view class="empty-desc">请检查网络后重试</view>
+          <button class="retry-button" bindtap="onRetryTools">重新加载</button>
+        </view>
+
+        <view wx:elif="{{toolCount}}" class="waterfall-grid">
           <view wx:for="{{toolColumns}}" wx:for-item="column" wx:key="index" class="waterfall-column">
             <view
               wx:for="{{column}}"
               wx:for-item="tool"
-              wx:key="id"
+              wx:key="toolId"
               class="tool-card"
-              data-id="{{tool.id}}"
+              data-tool-id="{{tool.toolId}}"
+              data-route="{{tool.route}}"
               bindtap="onToolTap"
             >
               <view class="tool-icon icon-{{tool.icon}}"><text>{{tool.symbol}}</text></view>

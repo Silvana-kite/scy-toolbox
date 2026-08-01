@@ -29,6 +29,11 @@ Set database permissions so clients have no direct read or write access. Grant
 only the deployed cloud function the permissions required to access the
 collection.
 
+Tool usage ranking is stored separately in `tools` and `tool_usages`; see
+[`TOOLS_DATABASE.md`](./TOOLS_DATABASE.md). It records only a tool ID, use count
+and latest use time for the current WeChat identity. It never stores image
+contents, masks, strokes or image-repair results.
+
 ## Cloud storage
 
 The client stores an avatar at `avatars/<userId>/avatar.png`. It deletes the

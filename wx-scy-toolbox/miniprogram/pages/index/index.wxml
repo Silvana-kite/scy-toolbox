@@ -43,15 +43,28 @@
   <view class="content-section">
     <view class="section-heading">
       <view class="section-title">常用工具</view>
-      <view class="result-count">{{filteredTools.length}} 个工具</view>
+      <view wx:if="{{isOfflineTools}}" class="offline-badge">离线数据</view>
+      <view wx:else class="result-count">{{filteredTools.length}} 个工具</view>
     </view>
 
-    <view wx:if="{{filteredTools.length}}" class="tool-grid">
+    <view wx:if="{{isLoadingTools}}" class="tools-loading">
+      <view class="loading-spinner"></view>
+      <view>正在加载工具</view>
+    </view>
+
+    <view wx:elif="{{toolsLoadError}}" class="tool-status">
+      <view class="empty-title">工具加载失败</view>
+      <view class="empty-desc">请检查网络后重试</view>
+      <button class="retry-button" bindtap="onRetryTools">重新加载</button>
+    </view>
+
+    <view wx:elif="{{filteredTools.length}}" class="tool-grid">
       <view
         wx:for="{{filteredTools}}"
-        wx:key="id"
+        wx:key="toolId"
         class="tool-item"
-        data-name="{{item.name}}"
+        data-tool-id="{{item.toolId}}"
+        data-route="{{item.route}}"
         bindtap="onToolTap"
       >
         <view class="tool-icon icon-{{item.icon}}">
@@ -71,18 +84,18 @@
   <view wx:if="{{showConsentModal}}" class="consent-mask" catchtouchmove="noop">
     <view class="consent-dialog">
       <view class="consent-dialog-title">使用前请确认</view>
-      <view class="consent-dialog-subtitle">照片修复仅处理您有权处理的图片</view>
+      <view class="consent-dialog-subtitle">图片去水印仅处理您有权处理的图片</view>
       <view class="consent-rule">
         <view class="consent-rule-index consent-rule-pink">1</view>
         <view>您承诺拥有所选图片的版权或已获得合法处理授权。</view>
       </view>
       <view class="consent-rule">
         <view class="consent-rule-index consent-rule-yellow">2</view>
-        <view>仅支持手动标记局部区域，不提供批量处理或自动识别版权水印。</view>
+        <view>仅支持手动标记局部区域，不提供批量处理或自动识别水印。</view>
       </view>
       <view class="consent-rule">
         <view class="consent-rule-index consent-rule-blue">3</view>
-        <view>图片仅在本机处理，不会上传原图。</view>
+        <view>图片仅在本机处理，不上传原图、掩膜或处理结果；会记录工具使用次数和最近使用时间，用于常用排行。</view>
       </view>
       <checkbox-group class="consent-checkbox" bindchange="onConsentCheckChange">
         <label class="consent-label">

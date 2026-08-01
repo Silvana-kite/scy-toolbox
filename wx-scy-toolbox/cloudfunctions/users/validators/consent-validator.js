@@ -1,4 +1,4 @@
-const CONSENT_VERSION = "2026-08-01";
+const CONSENT_VERSION = "2026-08-02";
 
 function validateConsent(consent) {
   if (!consent || typeof consent !== "object" || Array.isArray(consent)) {

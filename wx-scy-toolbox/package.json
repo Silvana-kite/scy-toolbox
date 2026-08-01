@@ -1,5 +1,6 @@
 {
-  "dependencies": {
-    "lottie-miniprogram": "^1.0.12"
-  }
+  "scripts": {
+    "test": "node --test test/*.test.js cloudfunctions/users/test/*.test.js cloudfunctions/tools/test/*.test.js"
+  },
+  "dependencies": {}
 }
