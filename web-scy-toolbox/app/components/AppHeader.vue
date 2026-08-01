@@ -4,7 +4,8 @@ import { Boxes, Heart, House, UserRound } from 'lucide-vue-next'
 const route = useRoute()
 
 const links = [
-  { to: '/', label: '工具', icon: House },
+  { to: '/', label: '常用', icon: House },
+  { to: '/tools', label: '工具大全', icon: Boxes },
   { to: '/me', label: '我的', icon: UserRound },
 ]
 

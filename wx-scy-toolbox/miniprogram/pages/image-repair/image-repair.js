@@ -1,4 +1,4 @@
-const { repairImage } = require("../../utils/image-inpaint-core");
+const { createRepairJob } = require("../../utils/image-inpaint-core");
 
 const GUIDE_STORAGE_KEY = "scy-image-repair-guide-seen";
 const MAX_IMAGE_EDGE = 4096;
@@ -25,6 +25,13 @@ function getPixelRatio() {
 function isDeveloperTool() {
   const deviceInfo = typeof wx.getDeviceInfo === "function" ? wx.getDeviceInfo() : null;
   return Boolean(deviceInfo && deviceInfo.platform === "devtools");
+}
+
+function repairFailureMessage(code) {
+  if (code === "insufficient-context") return "\u8bf7\u4fdd\u7559\u9009\u533a\u5468\u56f4\u7684\u80cc\u666f\uff0c\u518d\u8fdb\u884c\u4fee\u590d";
+  if (code === "memory-allocation-failed") return "\u56fe\u7247\u8fc7\u5927\uff0c\u8bf7\u7f29\u5c0f\u56fe\u7247\u6216\u51cf\u5c11\u6807\u8bb0\u533a\u57df";
+  if (code === "computation-aborted") return "\u5df2\u53d6\u6d88\u5904\u7406";
+  return code;
 }
 
 async function findCanvasInfo(page, selector, attempts = 3) {
@@ -525,13 +532,18 @@ Page({
   runLocalRepair(imageData, mask) {
     setTimeout(async () => {
       try {
-        const result = repairImage({
+        const job = createRepairJob({
           pixels: imageData.data,
           mask,
           width: this.imageWidth,
           height: this.imageHeight,
           onProgress: (progress) => this.setData({ progress }),
         });
+        const result = job.step(12).result;
+        if (result.errorCode) {
+          this.finishRepairError(result.errorCode);
+          return;
+        }
         await this.completeRepair(result.pixels.buffer);
       } catch (error) {
         this.finishRepairError("本地修复失败，请重试");
@@ -572,7 +584,7 @@ Page({
   finishRepairError(message) {
     this.destroyWorker();
     this.setData({ processing: false, progress: 0 });
-    wx.showToast({ title: message, icon: "none" });
+    wx.showToast({ title: repairFailureMessage(message), icon: "none" });
   },
 
   onCompareSlider(event) { this.setData({ comparePosition: Number(event.detail.value) }); },

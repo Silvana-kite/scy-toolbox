@@ -39,6 +39,16 @@
 
 将两个集合配置为客户端无直接读写权限，只允许部署后的 `tools` 云函数访问。
 
+## Web 复用
+
+`web-scy-toolbox` 通过既有的 CloudBase 服务端 API Key 复用本环境的 `tools` 与
+`tool_usages`，不会新建工具目录或统计集合。Web 登录账号写入
+`openid: web:<userId>` 和 `platform: web`；此处 `openid` 是复用既有唯一索引的内部
+身份键，不是微信 OpenID。小程序记录仍只写入真实微信 OpenID。
+
+两端均以进入工具页作为一次使用，使用 `totalUseCount` 汇总全局次数。Web 侧说明见
+`web-scy-toolbox/docs/TOOLS.md`。
+
 ## 接口与降级
 
 - `listCatalog` 返回全部启用工具。

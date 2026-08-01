@@ -12,12 +12,17 @@ worker.onMessage((event) => {
       height: payload.height,
       onProgress: (progress) => worker.postMessage({ type: "progress", progress }),
     });
+    if (result.errorCode) {
+      worker.postMessage({ type: "error", code: result.errorCode, message: result.errorCode });
+      return;
+    }
     worker.postMessage({
       type: "done",
       pixels: result.pixels.buffer,
       markedPixels: result.markedPixels,
     });
   } catch (error) {
-    worker.postMessage({ type: "error", message: error && error.message ? error.message : "图片修复失败" });
+    const code = error instanceof RangeError ? "memory-allocation-failed" : "unexpected-error";
+    worker.postMessage({ type: "error", code, message: error && error.message ? error.message : code });
   }
 });
