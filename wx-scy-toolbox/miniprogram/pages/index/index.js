@@ -3,6 +3,8 @@ const categories = [
 ];
 
 const tools = [];
+const CONSENT_STORAGE_KEY = "scy-image-repair-consent";
+const CONSENT_VERSION = "2026-08-01";
 
 Page({
   data: {
@@ -11,12 +13,77 @@ Page({
     currentCategory: "推荐",
     keyword: "",
     filteredTools: tools,
+    showConsentModal: false,
+    consentAccepted: false,
+    consentSubmitting: false,
+  },
+
+  onLoad() {
+    this.syncConsentModal();
   },
 
   onShow() {
     const tabBar = this.getTabBar && this.getTabBar();
     if (tabBar) {
       tabBar.setSelected(0);
+    }
+    this.syncConsentModal();
+  },
+
+  syncConsentModal() {
+    const consent = wx.getStorageSync(CONSENT_STORAGE_KEY);
+    const hasAccepted =
+      consent &&
+      consent.version === CONSENT_VERSION &&
+      consent.imageRightsConfirmed === true;
+    this.setData({
+      showConsentModal: !hasAccepted,
+      consentAccepted: false,
+      consentSubmitting: false,
+    });
+  },
+
+  onConsentCheckChange(event) {
+    this.setData({ consentAccepted: event.detail.value.includes("image-rights") });
+  },
+
+  noop() {},
+
+  onConsentReject() {
+    wx.showModal({
+      title: "暂不能使用",
+      content: "使用照片修复工具前，需要确认您拥有图片处理权。",
+      confirmText: "退出小程序",
+      showCancel: false,
+      success: () => {
+        wx.exitMiniProgram({
+          fail: () => wx.showToast({ title: "已取消使用", icon: "none" }),
+        });
+      },
+    });
+  },
+
+  async onConsentAccept() {
+    if (!this.data.consentAccepted || this.data.consentSubmitting) {
+      if (!this.data.consentAccepted) {
+        wx.showToast({ title: "请先勾选图片处理权承诺", icon: "none" });
+      }
+      return;
+    }
+
+    const consent = { version: CONSENT_VERSION, imageRightsConfirmed: true };
+    wx.setStorageSync(CONSENT_STORAGE_KEY, consent);
+    this.setData({ consentSubmitting: true });
+    wx.showLoading({ title: "正在初始化" });
+    try {
+      await getApp().initializeUser(consent);
+      this.setData({ showConsentModal: false });
+    } catch (error) {
+      this.setData({ showConsentModal: false });
+      wx.showToast({ title: "用户资料将在网络恢复后初始化", icon: "none" });
+    } finally {
+      wx.hideLoading();
+      this.setData({ consentSubmitting: false });
     }
   },
 

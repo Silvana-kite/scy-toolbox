@@ -4,6 +4,7 @@ const { createUserId } = require("../lib/identity");
 const { retryWrite } = require("../lib/retry");
 const { formatDateKey, formatDefaultNickname } = require("../lib/time");
 const { createUsersService } = require("../services/users-service");
+const { CONSENT_VERSION, validateConsent } = require("../validators/consent-validator");
 const {
   validateAvatarFileId,
   validateNickname,
@@ -86,15 +87,65 @@ test("bootstraps once and updates activity on later launches", async () => {
     writeWithRetry: (operation) => operation(),
   });
 
-  const first = await service.bootstrap("openid-1");
-  const second = await service.bootstrap("openid-1");
+  const consent = { version: CONSENT_VERSION, imageRightsConfirmed: true };
+  const first = await service.bootstrap("openid-1", consent);
+  const second = await service.bootstrap("openid-1", consent);
 
   assert.equal(first.created, true);
   assert.equal(second.created, false);
   assert.equal(records.length, 1);
   assert.equal(second.user.loginCount, 2);
   assert.equal(second.user.lastActiveAtKey, "2026-07-31 21:36:05");
+  assert.equal(records[0].consentVersion, CONSENT_VERSION);
+  assert.equal(records[0].imageRightsConfirmed, true);
+  assert.equal(records[0].consentedAtKey, "2026-07-31 21:35:05");
   assert.equal(Object.hasOwn(second.user, "openid"), false);
+});
+
+test("requires an active image-rights confirmation before user bootstrap", () => {
+  assert.deepEqual(
+    validateConsent({ version: CONSENT_VERSION, imageRightsConfirmed: true }),
+    { version: CONSENT_VERSION, imageRightsConfirmed: true }
+  );
+  assert.throws(() => validateConsent());
+  assert.throws(() => validateConsent({ version: CONSENT_VERSION, imageRightsConfirmed: false }));
+  assert.throws(() => validateConsent({ version: "old-version", imageRightsConfirmed: true }));
+});
+
+test("records the consent for an existing user created before the agreement", async () => {
+  const user = {
+    _id: "user-record-legacy",
+    openid: "openid-legacy",
+    userId: "U20260731213505ABCDEF12",
+    nickname: "SCY用户",
+    avatarFileId: "",
+    status: "active",
+    loginCount: 1,
+  };
+  let activityUpdate;
+  const service = createUsersService({
+    repository: {
+      async findByOpenid() { return user; },
+      async updateActivity(id, timestamp, timestampKey, consent) {
+        activityUpdate = { id, timestamp, timestampKey, consent };
+      },
+    },
+    now: () => new Date("2026-08-01T00:00:00.000Z"),
+    writeWithRetry: (operation) => operation(),
+  });
+
+  const result = await service.bootstrap("openid-legacy", {
+    version: CONSENT_VERSION,
+    imageRightsConfirmed: true,
+  });
+
+  assert.equal(activityUpdate.id, "user-record-legacy");
+  assert.deepEqual(activityUpdate.consent, {
+    version: CONSENT_VERSION,
+    imageRightsConfirmed: true,
+  });
+  assert.equal(result.user.consentVersion, CONSENT_VERSION);
+  assert.equal(result.user.consentedAtKey, "2026-08-01 08:00:00");
 });
 
 test("updates only validated profile fields for the current user", async () => {

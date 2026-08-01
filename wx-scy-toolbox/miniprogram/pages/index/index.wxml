@@ -67,4 +67,31 @@
       <view class="empty-desc">更多工具正在整理中</view>
     </view>
   </view>
+
+  <view wx:if="{{showConsentModal}}" class="consent-mask" catchtouchmove="noop">
+    <view class="consent-dialog">
+      <view class="consent-dialog-title">使用前请确认</view>
+      <view class="consent-dialog-subtitle">照片修复仅处理您有权处理的图片</view>
+      <view class="consent-rule">
+        <view class="consent-rule-index consent-rule-pink">1</view>
+        <view>您承诺拥有所选图片的版权或已获得合法处理授权。</view>
+      </view>
+      <view class="consent-rule">
+        <view class="consent-rule-index consent-rule-yellow">2</view>
+        <view>仅支持手动标记局部区域，不提供批量处理或自动识别版权水印。</view>
+      </view>
+      <view class="consent-rule">
+        <view class="consent-rule-index consent-rule-blue">3</view>
+        <view>图片仅在本机处理，不会上传原图。</view>
+      </view>
+      <checkbox-group class="consent-checkbox" bindchange="onConsentCheckChange">
+        <label class="consent-label">
+          <checkbox value="image-rights" color="#F19AAC" checked="{{consentAccepted}}" />
+          <text>我已阅读并承诺拥有图片处理权</text>
+        </label>
+      </checkbox-group>
+      <button class="consent-confirm" loading="{{consentSubmitting}}" disabled="{{consentSubmitting}}" bindtap="onConsentAccept">同意并继续</button>
+      <button class="consent-reject" disabled="{{consentSubmitting}}" bindtap="onConsentReject">拒绝并退出</button>
+    </view>
+  </view>
 </view>

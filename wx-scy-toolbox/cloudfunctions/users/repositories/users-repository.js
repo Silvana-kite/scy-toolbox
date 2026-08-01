@@ -13,7 +13,7 @@ function createUsersRepository(database) {
       return collection.add({ data: user });
     },
 
-    async updateActivity(id, timestamp, timestampKey) {
+    async updateActivity(id, timestamp, timestampKey, consent) {
       return collection.doc(id).update({
         data: {
           loginCount: database.command.inc(1),
@@ -21,6 +21,14 @@ function createUsersRepository(database) {
           lastActiveAtKey: timestampKey,
           updatedAt: timestamp,
           updatedAtKey: timestampKey,
+          ...(consent
+            ? {
+              consentVersion: consent.version,
+              imageRightsConfirmed: true,
+              consentedAt: timestamp,
+              consentedAtKey: timestampKey,
+            }
+            : {}),
         },
       });
     },

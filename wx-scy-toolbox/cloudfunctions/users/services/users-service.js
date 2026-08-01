@@ -16,10 +16,13 @@ function toPublicUser(user) {
     updatedAtKey: user.updatedAtKey,
     lastActiveAt: user.lastActiveAt,
     lastActiveAtKey: user.lastActiveAtKey,
+    consentVersion: user.consentVersion,
+    consentedAt: user.consentedAt,
+    consentedAtKey: user.consentedAtKey,
   };
 }
 
-function createNewUser(openid, createdAt, createId) {
+function createNewUser(openid, createdAt, createId, consent) {
   const timestampKey = formatDateKey(createdAt);
   return {
     openid,
@@ -35,6 +38,10 @@ function createNewUser(openid, createdAt, createId) {
     updatedAtKey: timestampKey,
     lastActiveAt: createdAt,
     lastActiveAtKey: timestampKey,
+    consentVersion: consent.version,
+    imageRightsConfirmed: true,
+    consentedAt: createdAt,
+    consentedAtKey: timestampKey,
   };
 }
 
@@ -44,11 +51,18 @@ function createUsersService({
   createId = createUserId,
   writeWithRetry = retryWrite,
 }) {
-  async function touchUser(user) {
+  async function touchUser(user, consent) {
     const timestamp = now();
     const timestampKey = formatDateKey(timestamp);
     const loginCount = (Number(user.loginCount) || 0) + 1;
-    await writeWithRetry(() => repository.updateActivity(user._id, timestamp, timestampKey));
+    const shouldRecordConsent =
+      user.consentVersion !== consent.version || user.imageRightsConfirmed !== true;
+    await writeWithRetry(() => repository.updateActivity(
+      user._id,
+      timestamp,
+      timestampKey,
+      shouldRecordConsent ? consent : null
+    ));
     return {
       ...user,
       loginCount,
@@ -56,14 +70,22 @@ function createUsersService({
       lastActiveAtKey: timestampKey,
       updatedAt: timestamp,
       updatedAtKey: timestampKey,
+      ...(shouldRecordConsent
+        ? {
+          consentVersion: consent.version,
+          imageRightsConfirmed: true,
+          consentedAt: timestamp,
+          consentedAtKey: timestampKey,
+        }
+        : {}),
     };
   }
 
   return {
-    async bootstrap(openid) {
+    async bootstrap(openid, consent) {
       const existingUser = await repository.findByOpenid(openid);
       if (existingUser) {
-        const user = await touchUser(existingUser);
+        const user = await touchUser(existingUser, consent);
         return { user: toPublicUser(user), created: false };
       }
 
@@ -73,12 +95,12 @@ function createUsersService({
           return { user: racedUser, created: false };
         }
 
-        const user = createNewUser(openid, now(), createId);
+        const user = createNewUser(openid, now(), createId, consent);
         const writeResult = await repository.add(user);
         return { user: { ...user, _id: writeResult._id }, created: true };
       });
 
-      const user = result.created ? result.user : await touchUser(result.user);
+      const user = result.created ? result.user : await touchUser(result.user, consent);
       return { user: toPublicUser(user), created: result.created };
     },
 

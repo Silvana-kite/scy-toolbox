@@ -26,7 +26,7 @@ App({
         traceUser: true,
       });
     }
-    this.initializeUser();
+    this.restoreConsentState();
   },
 
   setCurrentUser: function (user) {
@@ -34,7 +34,18 @@ App({
     return user;
   },
 
-  initializeUser: function () {
+  restoreConsentState: function () {
+    const consent = wx.getStorageSync("scy-image-repair-consent");
+    if (consent && consent.version === "2026-08-01" && consent.imageRightsConfirmed === true) {
+      this.initializeUser(consent);
+      return;
+    }
+
+    this.globalData.userReady = Promise.resolve(null);
+    wx.reLaunch({ url: "/pages/index/index" });
+  },
+
+  initializeUser: function (consent) {
     if (this.globalData.isInitializingUser) {
       return this.globalData.userReady;
     }
@@ -42,7 +53,7 @@ App({
     this.globalData.isInitializingUser = true;
     const userRequest = !wx.cloud
       ? Promise.resolve(createGuestUser())
-      : callCloudFunction("users", { action: "bootstrap" })
+      : callCloudFunction("users", { action: "bootstrap", consent })
         .then((result) => result.data.user)
         .catch((error) => {
           console.warn("用户初始化失败，以访客身份继续", error);

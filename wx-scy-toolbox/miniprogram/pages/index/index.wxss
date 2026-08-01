@@ -314,3 +314,41 @@ page {
   font-size: 24rpx;
   line-height: 34rpx;
 }
+
+.consent-mask {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44rpx;
+  box-sizing: border-box;
+  background: rgba(63, 65, 75, .44);
+}
+
+.consent-dialog {
+  width: 100%;
+  padding: 40rpx 32rpx 28rpx;
+  box-sizing: border-box;
+  border-radius: 18rpx;
+  background: #ffffff;
+  box-shadow: 0 18rpx 52rpx rgba(63, 65, 75, .18);
+}
+
+.consent-dialog-title { color: #45464f; font-size: 37rpx; font-weight: 700; line-height: 52rpx; }
+.consent-dialog-subtitle { margin-top: 6rpx; color: #a6a5ab; font-size: 24rpx; line-height: 34rpx; }
+.consent-rule { display: flex; align-items: flex-start; margin-top: 24rpx; color: #5b5d66; font-size: 24rpx; line-height: 36rpx; }
+.consent-rule-index { display: flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 34rpx; height: 34rpx; margin: 1rpx 14rpx 0 0; border-radius: 50%; font-size: 21rpx; font-weight: 700; }
+.consent-rule-pink { color: #ed8e9f; background: #fdebef; }
+.consent-rule-yellow { color: #caac68; background: #fff8e8; }
+.consent-rule-blue { color: #94b2d4; background: #eff6fe; }
+.consent-checkbox { margin-top: 28rpx; padding: 20rpx; border-radius: 14rpx; background: #fdf8fa; }
+.consent-label { display: flex; align-items: flex-start; color: #5b5d66; font-size: 24rpx; line-height: 36rpx; }
+.consent-label checkbox { flex: 0 0 auto; margin: 1rpx 10rpx 0 0; transform: scale(.8); }
+.consent-confirm, .consent-reject { display: flex; align-items: center; justify-content: center; width: 100%; height: 84rpx; margin: 0; padding: 0; border-radius: 14rpx; font-size: 27rpx; line-height: 1; }
+.consent-confirm { margin-top: 30rpx; color: #ffffff; background: #f19aac; font-weight: 700; }
+.consent-reject { margin-top: 12rpx; color: #8b8794; background: #f6f5f7; }

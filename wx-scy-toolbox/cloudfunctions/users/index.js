@@ -2,6 +2,7 @@ const cloud = require("wx-server-sdk");
 const { createUsersRepository } = require("./repositories/users-repository");
 const { createUsersService } = require("./services/users-service");
 const { validateProfileUpdate } = require("./validators/profile-validator");
+const { validateConsent } = require("./validators/consent-validator");
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
@@ -19,7 +20,7 @@ exports.main = async (event = {}) => {
       case "bootstrap":
         return {
           success: true,
-          data: await usersService.bootstrap(openid),
+          data: await usersService.bootstrap(openid, validateConsent(event.consent)),
         };
       case "updateProfile":
         return {
