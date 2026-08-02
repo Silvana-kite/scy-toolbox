@@ -1,4 +1,9 @@
 <view class="repair-page">
+  <view class="repair-topbar">
+    <view class="repair-name">图片去水印</view>
+    <button class="favorite-button {{isFavorite ? 'favorite-button-active' : ''}}" bindtap="onFavoriteTap">{{isFavorite ? '已收藏' : '收藏'}}</button>
+  </view>
+  <view wx:if="{{syncMessage}}" class="sync-message">{{syncMessage}}</view>
   <view wx:if="{{showGuide}}" class="guide-mask" catchtouchmove="noop">
     <view class="guide-dialog">
       <view class="guide-title">三步完成图片去水印</view>

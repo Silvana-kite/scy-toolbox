@@ -4,7 +4,9 @@
     "pages/category/category",
     "pages/image-repair/image-repair",
     "pages/tool/tool",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/favorites/favorites",
+    "pages/history/history"
   ],
   "window": {
     "backgroundColor": "#F4F7F5",

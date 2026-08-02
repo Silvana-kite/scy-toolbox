@@ -1,0 +1,2 @@
+.page { min-height: 100vh; padding: 24rpx; background: #f8fbfd; }.row { display:flex; align-items:center; padding:24rpx 0; border-bottom:2rpx solid #edf0f2; }.copy { flex:1; color:#30343a; font-size:30rpx; }.copy text { display:block; margin-top:8rpx; color:#9ba3a8; font-size:23rpx; }.remove { margin:0; color:#c46a7c; background:#fff4f6; font-size:24rpx; }.empty { padding:100rpx 0; color:#89929a; text-align:center; }
+.retry { margin-top:24rpx; color:#1976d2; background:#eaf3fc; font-size:25rpx; }

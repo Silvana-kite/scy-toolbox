@@ -17,9 +17,10 @@ export interface ToolRecord {
 
 export interface ToolUsageRecord {
   _id?: string
-  openid: string
+  ownerKey: string
+  ownerType: 'web' | 'wx'
+  ownerUserId: string
   toolId: string
-  platform: 'web'
   useCount: number
   firstUsedAt: Date
   lastUsedAt: Date

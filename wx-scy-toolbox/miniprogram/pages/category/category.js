@@ -1,4 +1,4 @@
-const { loadCatalog, recordToolUse } = require("../../services/tool-catalog");
+const { loadCatalog } = require("../../services/tool-catalog");
 
 const ALL_CATEGORY = { id: "all", name: "全部", symbol: "▦" };
 
@@ -53,7 +53,6 @@ Page({
     if (!route) {
       return;
     }
-    recordToolUse(toolId).catch(() => {});
     wx.navigateTo({ url: route });
   },
 

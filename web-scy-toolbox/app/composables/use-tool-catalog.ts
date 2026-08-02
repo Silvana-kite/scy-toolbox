@@ -34,6 +34,5 @@ export function useToolCatalog() {
   return {
     catalog: (force = false) => fetchCached<CatalogResponse>('scy-web-catalog', '/api/tools/catalog', force),
     home: (userId: string | null, force = false) => fetchCached<HomeResponse>(`scy-web-home-${userId || 'anonymous'}`, '/api/tools/home?limit=10&offset=0', force),
-    recordUse: (toolId: string) => $fetch(`/api/tools/${toolId}/use`, { method: 'POST' }),
   }
 }

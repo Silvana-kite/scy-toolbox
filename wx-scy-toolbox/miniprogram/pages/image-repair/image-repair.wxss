@@ -1,5 +1,10 @@
 page { background: #f7f8fa; }
 .repair-page { min-height: 100vh; color: #263238; }
+.repair-topbar { display: flex; align-items: center; justify-content: space-between; height: 92rpx; padding: 0 30rpx; box-sizing: border-box; border-bottom: 1rpx solid #e5eaee; background: #fff; }
+.repair-name { color: #263238; font-size: 30rpx; font-weight: 700; }
+.favorite-button { min-width: 112rpx; height: 56rpx; margin: 0; padding: 0 18rpx; border-radius: 28rpx; color: #b85c76; background: #fff1f4; font-size: 24rpx; line-height: 56rpx; }
+.favorite-button-active { color: #fff; background: #d96b88; }
+.sync-message { padding: 14rpx 30rpx; color: #a56832; background: #fff8e9; font-size: 23rpx; line-height: 34rpx; }
 .empty-page { display: flex; min-height: calc(100vh - 160rpx); align-items: center; flex-direction: column; justify-content: center; padding: 0 56rpx; box-sizing: border-box; text-align: center; }
 .empty-mark { display: flex; align-items: center; justify-content: center; width: 128rpx; height: 128rpx; color: #fff; border-radius: 24rpx; background: #6aaee4; font-size: 54rpx; font-weight: 700; }
 .empty-title { margin-top: 38rpx; color: #2c3541; font-size: 34rpx; font-weight: 700; line-height: 48rpx; }

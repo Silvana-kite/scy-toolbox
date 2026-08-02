@@ -45,6 +45,7 @@
       <view class="stat-label">常用工具 Top1</view>
     </view>
   </view>
+  <view wx:if="{{overviewError}}" class="overview-error">{{overviewError}}</view>
 
   <view class="menu-list">
     <view class="menu-row" bindtap="onOpenFavorites">

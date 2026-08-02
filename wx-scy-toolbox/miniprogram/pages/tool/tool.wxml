@@ -6,6 +6,7 @@
     </view>
     <button class="favorite-button {{isFavorite ? 'favorite-button-active' : ''}}" bindtap="onFavoriteTap">{{isFavorite ? '★' : '☆'}}</button>
   </view>
+  <view wx:if="{{syncMessage}}" class="sync-message">{{syncMessage}}</view>
 
   <view class="form-card">
     <view wx:for="{{tool.fields}}" wx:key="key" class="form-field">

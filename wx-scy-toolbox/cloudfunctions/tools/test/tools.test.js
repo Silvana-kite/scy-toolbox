@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { createToolsService, INITIAL_TOOL, toPublicTool } = require("../services/tools-service");
 const { createToolsRepository } = require("../repositories/tools-repository");
+const { createPersonalToolsRepository } = require("../repositories/personal-tools-repository");
 const { validatePagination, validateToolId } = require("../validators/tools-validator");
 
 function createTool(toolId, overrides = {}) {
@@ -14,7 +15,7 @@ function createTool(toolId, overrides = {}) {
   };
 }
 
-function createMemoryDatabase() {
+function createMemoryDatabase({ rejectIdWrites = false } = {}) {
   const records = new Map();
   const command = { in: (values) => ({ values }) };
 
@@ -45,13 +46,18 @@ function createMemoryDatabase() {
             }
             return { data: { ...store.get(id) } };
           },
-          async set({ data }) { store.set(id, { ...data, _id: id }); },
+          async set({ data }) {
+            if (rejectIdWrites && Object.hasOwn(data, "_id")) throw new Error("cannot update _id");
+            store.set(id, { ...data, _id: id });
+          },
           async update({ data }) {
+            if (rejectIdWrites && Object.hasOwn(data, "_id")) throw new Error("cannot update _id");
             if (!store.has(id)) {
               throw new Error("not found");
             }
             store.set(id, { ...store.get(id), ...data });
           },
+          async remove() { store.delete(id); },
         };
       },
       where(filters) {
@@ -230,4 +236,24 @@ test("transactionally counts usage, deduplicates five seconds, and rejects disab
     repository.recordUse("openid-1", "disabled-tool", new Date("2026-08-01T00:00:10.000Z")),
     /Tool is unavailable/
   );
+});
+
+test("personal favorites and history never write the immutable _id field", async () => {
+  const database = createMemoryDatabase({ rejectIdWrites: true });
+  const repository = createPersonalToolsRepository(database);
+  const tools = database.records.get("tools") || new Map();
+  database.records.set("tools", tools);
+  tools.set("image-repair", { ...INITIAL_TOOL, _id: "image-repair" });
+  const owner = { ownerKey: "wx:U123", ownerType: "wx", ownerUserId: "U123" };
+  const startedAt = new Date("2026-08-01T00:00:00.000Z");
+
+  await repository.addFavorite(owner, "image-repair", startedAt);
+  const usage = await repository.recordUse(owner, "image-repair", "request_123456", startedAt);
+  const expiredRetry = await repository.recordUse(owner, "image-repair", "request_123456", new Date("2026-08-02T00:00:01.000Z"));
+
+  assert.deepEqual(usage.counted, true);
+  assert.deepEqual(expiredRetry.counted, true);
+  assert.equal(database.records.get("tool_favorites").size, 1);
+  assert.equal(database.records.get("tool_usage_history").size, 2);
+  assert.equal(database.records.get("user_tool_stats").get("stats_wx_U123").usageCount, 2);
 });

@@ -42,19 +42,22 @@ function createToolsService({ repository, now = () => new Date() }) {
       return { tools: tools.map(toPublicTool) };
     },
 
-    async listHome(openid, pagination) {
+    async listHome(ownerKey, pagination) {
       await ensureCatalog();
-      const personalTools = await repository.listPersonalRanked(openid, pagination);
-      const hasPersonalUsage = personalTools.length || await repository.hasPersonalUsage(openid);
+      const personalTools = await repository.listPersonalRanked(ownerKey, pagination);
+      const hasPersonalUsage = personalTools.length || await repository.hasPersonalUsage(ownerKey);
       const source = hasPersonalUsage ? "personal" : "global";
       const tools = hasPersonalUsage ? personalTools : await repository.listGlobalRanked(pagination);
       return { tools: tools.map(toPublicTool), source };
     },
 
-    async recordUse(openid, toolId) {
+    // Compatibility only: current pages record use through personal-tools-service
+    // after a successful execution, which also writes history and request deduplication.
+    async recordUse(ownerKey, toolId) {
       await ensureCatalog();
-      return repository.recordUse(openid, toolId, now());
+      return repository.recordUse(ownerKey, toolId, now());
     },
+
   };
 }
 

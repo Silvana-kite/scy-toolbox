@@ -2,8 +2,8 @@ const TOOLS_COLLECTION = "tools";
 const TOOL_USAGES_COLLECTION = "tool_usages";
 const DEDUPE_WINDOW_MS = 5000;
 
-function createUsageId(openid, toolId) {
-  return `usage_${openid}_${toolId}`;
+function createUsageId(ownerKey, toolId) {
+  return `usage_${ownerKey.replace(/[^a-zA-Z0-9_-]/g, "_")}_${toolId}`;
 }
 
 function getDocumentOrNull(reference) {
@@ -51,9 +51,9 @@ function createToolsRepository(database) {
       return result.data;
     },
 
-    async listPersonalRanked(openid, { limit, offset }) {
+    async listPersonalRanked(ownerKey, { limit, offset }) {
       const ranked = await usages
-        .where({ openid })
+        .where({ ownerKey })
         .orderBy("useCount", "desc")
         .orderBy("lastUsedAt", "desc")
         .skip(offset)
@@ -73,13 +73,16 @@ function createToolsRepository(database) {
       return toolIds.map((toolId) => toolsById.get(toolId)).filter(Boolean);
     },
 
-    async hasPersonalUsage(openid) {
-      const result = await usages.where({ openid }).limit(1).get();
+    async hasPersonalUsage(ownerKey) {
+      const result = await usages.where({ ownerKey }).limit(1).get();
       return result.data.length > 0;
     },
 
-    async recordUse(openid, toolId, timestamp) {
-      const usageId = createUsageId(openid, toolId);
+    async recordUse(owner, toolId, timestamp) {
+      const normalizedOwner = typeof owner === "string"
+        ? { ownerKey: owner, ownerType: "legacy", ownerUserId: owner }
+        : owner;
+      const usageId = createUsageId(normalizedOwner.ownerKey, toolId);
       return database.runTransaction(async (transaction) => {
         const tool = await getDocumentOrNull(transaction.collection(TOOLS_COLLECTION).doc(toolId));
         if (!tool || tool.isEnabled !== true) {
@@ -111,7 +114,9 @@ function createToolsRepository(database) {
           await usageReference.set({
             data: {
               _id: usageId,
-              openid,
+              ownerKey: normalizedOwner.ownerKey,
+              ownerType: normalizedOwner.ownerType,
+              ownerUserId: normalizedOwner.ownerUserId,
               toolId,
               useCount: 1,
               firstUsedAt: timestamp,

@@ -4,6 +4,7 @@ import type { ToolDefinition, ToolResult } from '~/types/tool'
 
 const props = defineProps<{ tool: ToolDefinition }>()
 const store = useToolboxStore()
+const emit = defineEmits<{ completed: [] }>()
 const { copy, copied } = useClipboard()
 const values = ref<Record<string, string | number>>({})
 const result = ref<ToolResult | null>(null)
@@ -22,6 +23,7 @@ function saveResult(value: ToolResult) {
   result.value = value
   error.value = ''
   store.addHistory(props.tool.id, value.text)
+  emit('completed')
 }
 
 function run() {

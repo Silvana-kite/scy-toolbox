@@ -4,7 +4,7 @@ import type { CatalogTool } from '~/types/catalog'
 
 useSeoMeta({ title: '常用工具 | SCY 百宝箱' })
 const auth = useAuthStore()
-const { home, recordUse } = useToolCatalog()
+const { home } = useToolCatalog()
 const tools = ref<CatalogTool[]>([])
 const source = ref<'personal' | 'global'>('global')
 const loading = ref(true)
@@ -18,7 +18,6 @@ async function load(force = false) {
     tools.value = result.data.tools; source.value = result.data.source; offline.value = result.offline
   } catch { tools.value = []; failed.value = true } finally { loading.value = false }
 }
-function openTool(tool: CatalogTool) { if (auth.user) recordUse(tool.toolId).catch(() => {}) }
 onMounted(async () => { await auth.loadSession(); await load() })
 </script>
 
@@ -28,7 +27,7 @@ onMounted(async () => { await auth.loadSession(); await load() })
     <p v-if="offline" class="offline">当前显示离线缓存数据</p>
     <section v-if="loading" class="empty-state panel"><span class="spinner" />正在加载工具</section>
     <section v-else-if="failed" class="empty-state panel"><Wrench :size="28" /><strong>工具加载失败</strong><button class="button" @click="load(true)">重新加载</button></section>
-    <div v-else-if="tools.length" class="tool-grid"><CatalogToolCard v-for="tool in tools" :key="tool.toolId" :tool="tool" @open="openTool" /></div>
+    <div v-else-if="tools.length" class="tool-grid"><CatalogToolCard v-for="tool in tools" :key="tool.toolId" :tool="tool" /></div>
     <section v-else class="empty-state panel"><Wrench :size="28" /><strong>暂无工具</strong></section>
   </div>
 </template>

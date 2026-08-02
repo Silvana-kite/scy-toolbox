@@ -57,6 +57,7 @@ page {
   border-color: #efd199;
   background: #fff8e8;
 }
+.sync-message { margin: 0 30rpx; padding: 14rpx 18rpx; color: #a56832; border-radius: 8rpx; background: #fff8e9; font-size: 23rpx; line-height: 34rpx; }
 
 .form-card,
 .result-card,

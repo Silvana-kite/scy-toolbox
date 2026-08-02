@@ -176,6 +176,7 @@ page {
   background: #ffffff;
   box-shadow: 0 7rpx 20rpx rgba(106, 124, 151, 0.1);
 }
+.overview-error { margin: 16rpx 24rpx 0; padding: 16rpx 20rpx; color: #a56832; border-radius: 12rpx; background: #fff8e9; font-size: 23rpx; line-height: 34rpx; }
 
 .stat-item {
   display: flex;

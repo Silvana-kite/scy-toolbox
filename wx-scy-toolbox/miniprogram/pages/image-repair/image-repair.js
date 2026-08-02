@@ -1,4 +1,5 @@
 const { createRepairJob } = require("../../utils/image-inpaint-core");
+const { addFavorite, errorMessage, getFavoriteStatus, recordSuccessfulUse, removeFavorite } = require("../../services/personal-tools");
 
 const GUIDE_STORAGE_KEY = "scy-image-repair-guide-seen";
 const MAX_IMAGE_EDGE = 4096;
@@ -170,6 +171,8 @@ Page({
     comparePosition: 50,
     compareTransform: "translate(0px, 0px) scale(1)",
     compareImageStyle: "",
+    isFavorite: false,
+    syncMessage: "",
   },
 
   async onReady() {
@@ -183,6 +186,30 @@ Page({
     this.sourceContext = this.sourceCanvas.getContext("2d");
     this.strokes = [];
     this.redoStrokes = [];
+    this.refreshFavorite();
+  },
+
+  async refreshFavorite() {
+    try {
+      const result = await getFavoriteStatus("image-repair");
+      this.setData({ isFavorite: result.favorite });
+    } catch (error) {
+      this.setData({ syncMessage: errorMessage(error) });
+    }
+  },
+
+  async onFavoriteTap() {
+    try {
+      const result = this.data.isFavorite
+        ? await removeFavorite("image-repair")
+        : await addFavorite("image-repair");
+      this.setData({ isFavorite: result.favorite, syncMessage: "" });
+      wx.showToast({ title: result.favorite ? "已收藏" : "已取消收藏", icon: "none" });
+    } catch (error) {
+      const message = errorMessage(error);
+      this.setData({ syncMessage: message });
+      wx.showToast({ title: message, icon: "none" });
+    }
   },
 
   async ensureEditorCanvases() {
@@ -560,6 +587,13 @@ Page({
       const result = await canvasToTempFilePath(this.sourceCanvas, this.imageWidth, this.imageHeight);
       this.destroyWorker();
       this.setData({ processing: false, progress: 100, resultPath: result.tempFilePath, isResult: true, comparePosition: 50 });
+      recordSuccessfulUse("image-repair")
+        .then(() => this.setData({ syncMessage: "" }))
+        .catch((error) => {
+          const message = errorMessage(error);
+          this.setData({ syncMessage: message });
+          wx.showToast({ title: "使用记录未同步", icon: "none" });
+        });
       this.updateCompareTransform();
     } catch (error) {
       console.error("图片结果导出失败", error);

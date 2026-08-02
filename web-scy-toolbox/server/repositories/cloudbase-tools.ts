@@ -33,18 +33,18 @@ export function createCloudbaseToolsRepository(database = getCloudbaseDatabase()
     async listGlobal(limit, offset) {
       return data<ToolRecord>(await tools.where(enabled).orderBy('totalUseCount', 'desc').orderBy('lastUsedAt', 'desc').skip(offset).limit(limit).get())
     },
-    async listPersonal(openid, limit, offset) {
-      const ranked = data<ToolUsageRecord>(await usages.where({ openid }).orderBy('useCount', 'desc').orderBy('lastUsedAt', 'desc').skip(offset).limit(limit).get())
+    async listPersonal(ownerKey, limit, offset) {
+      const ranked = data<ToolUsageRecord>(await usages.where({ ownerKey }).orderBy('useCount', 'desc').orderBy('lastUsedAt', 'desc').skip(offset).limit(limit).get())
       if (!ranked.length) return []
       const ids = ranked.map(item => item.toolId)
       const records = data<ToolRecord>(await tools.where({ toolId: database.command.in(ids), ...enabled }).get())
       const byId = new Map(records.map(tool => [tool.toolId, tool]))
       return ids.map(id => byId.get(id)).filter((tool): tool is ToolRecord => Boolean(tool))
     },
-    async hasUsage(openid) {
-      return data<ToolUsageRecord>(await usages.where({ openid }).limit(1).get()).length > 0
+    async hasUsage(ownerKey) {
+      return data<ToolUsageRecord>(await usages.where({ ownerKey }).limit(1).get()).length > 0
     },
-    async recordUse(openid, toolId, at) {
+    async recordUse(ownerKey, toolId, at) {
       // The JS SDK exposes transaction primitives inconsistently across runtimes.
       // Use its command transaction so reads and both writes share one transaction ID.
       const transaction = await database.startTransaction()
@@ -53,7 +53,7 @@ export function createCloudbaseToolsRepository(database = getCloudbaseDatabase()
         const activeTools = data<ToolRecord>(await tools.where({ toolId, ...enabled }).limit(1).get({ transactionId }))
         const tool = activeTools[0]
         if (!tool) throw createError({ statusCode: 404, statusMessage: '工具不可用' })
-        const usage = data<ToolUsageRecord>(await usages.where({ openid, toolId }).limit(1).get({ transactionId }))[0]
+        const usage = data<ToolUsageRecord>(await usages.where({ ownerKey, toolId }).limit(1).get({ transactionId }))[0]
         if (usage && at.getTime() - new Date(usage.lastCountedAt).getTime() < DEDUPE_MS) {
           await database.commitTransaction({ transactionId })
           return { counted: false, totalUseCount: Number(tool.totalUseCount) || 0 }
@@ -61,7 +61,7 @@ export function createCloudbaseToolsRepository(database = getCloudbaseDatabase()
         const totalUseCount = (Number(tool.totalUseCount) || 0) + 1
         await tools.doc(tool._id || tool.toolId).update({ totalUseCount, lastUsedAt: at, updatedAt: at }, { transactionId })
         const payload: ToolUsageRecord = {
-          openid, toolId, platform: 'web', useCount: (usage?.useCount || 0) + 1,
+          ownerKey, ownerType: 'web', ownerUserId: ownerKey.replace(/^web:/, ''), toolId, useCount: (usage?.useCount || 0) + 1,
           firstUsedAt: usage?.firstUsedAt || at, lastUsedAt: at, lastCountedAt: at,
           createdAt: usage?.createdAt || at, updatedAt: at,
         }

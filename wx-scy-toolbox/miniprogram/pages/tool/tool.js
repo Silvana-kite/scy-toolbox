@@ -1,6 +1,7 @@
 const FAVORITES_STORAGE_KEY = "scy-tool-favorites";
 const HISTORY_STORAGE_KEY = "scy-tool-history";
 const USAGE_STORAGE_KEY = "scy-tool-usage-count";
+const { addFavorite, errorMessage, getFavoriteStatus, recordSuccessfulUse, removeFavorite } = require("../../services/personal-tools");
 
 const toolConfigs = {
   calculator: {
@@ -314,20 +315,23 @@ Page({
     tool: toolConfigs.calculator,
     formValues: createFormValues(toolConfigs.calculator),
     isFavorite: false,
+    syncMessage: "",
     result: { visible: false, status: "success", title: "", text: "", detail: "" },
     history: [],
   },
 
   onLoad(options) {
     const tool = toolConfigs[options.toolId] || toolConfigs.calculator;
-    const favorites = getStoredArray(FAVORITES_STORAGE_KEY);
     this.setData({
       tool,
       formValues: createFormValues(tool),
-      isFavorite: favorites.includes(tool.id),
+      isFavorite: false,
       result: { visible: false, status: "success", title: "", text: "", detail: "" },
       history: this.getToolHistory(tool.id),
     });
+    getFavoriteStatus(tool.id).then((result) => {
+      this.setData({ isFavorite: result.favorite, syncMessage: "" });
+    }).catch((error) => this.setData({ syncMessage: errorMessage(error) }));
     wx.setNavigationBarTitle({ title: tool.name });
   },
 
@@ -363,15 +367,17 @@ Page({
     });
   },
 
-  onFavoriteTap() {
-    const favorites = getStoredArray(FAVORITES_STORAGE_KEY);
-    const hasFavorite = favorites.includes(this.data.tool.id);
-    const nextFavorites = hasFavorite
-      ? favorites.filter((toolId) => toolId !== this.data.tool.id)
-      : [...favorites, this.data.tool.id];
-    wx.setStorageSync(FAVORITES_STORAGE_KEY, nextFavorites);
-    this.setData({ isFavorite: !hasFavorite });
-    wx.showToast({ title: hasFavorite ? "已取消收藏" : "已收藏", icon: "none" });
+  async onFavoriteTap() {
+    const action = this.data.isFavorite ? removeFavorite : addFavorite;
+    try {
+      const result = await action(this.data.tool.id);
+      this.setData({ isFavorite: result.favorite, syncMessage: "" });
+      wx.showToast({ title: result.favorite ? "已收藏" : "已取消收藏", icon: "none" });
+    } catch (error) {
+      const message = errorMessage(error);
+      this.setData({ syncMessage: message });
+      wx.showToast({ title: message, icon: "none" });
+    }
   },
 
   onExecute() {
@@ -379,7 +385,11 @@ Page({
       const output = runTool(this.data.tool, this.data.formValues);
       const result = { visible: true, status: "success", ...output };
       this.setData({ result });
-      this.saveHistory(result);
+      recordSuccessfulUse(this.data.tool.id).catch((error) => {
+        const message = errorMessage(error);
+        this.setData({ syncMessage: message });
+        wx.showToast({ title: message, icon: "none" });
+      });
     } catch (error) {
       this.setData({
         result: {

@@ -1,0 +1,2 @@
+.page { min-height:100vh; padding:24rpx; background:#f8fbfd; }.clear { margin:0 0 20rpx; color:#b95d70; background:#fff2f5; font-size:25rpx; }.row { padding:24rpx 0; border-bottom:2rpx solid #edf0f2; color:#30343a; font-size:30rpx; }.row text { display:block; margin-top:8rpx; color:#929aa2; font-size:23rpx; }.empty { padding:100rpx 0; color:#89929a; text-align:center; }
+.retry { margin-top:24rpx; color:#1976d2; background:#eaf3fc; font-size:25rpx; }

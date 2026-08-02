@@ -1,4 +1,4 @@
-const { loadHome, recordToolUse } = require("../../services/tool-catalog");
+const { loadHome } = require("../../services/tool-catalog");
 
 const categories = [{ id: "common", name: "常用" }];
 const CONSENT_STORAGE_KEY = "scy-image-repair-consent";
@@ -109,7 +109,6 @@ Page({
     if (!route) {
       return;
     }
-    recordToolUse(toolId).catch(() => {});
     wx.navigateTo({ url: route });
   },
 
